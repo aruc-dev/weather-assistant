@@ -85,6 +85,8 @@ The weather assistant now supports interactive commands for enhanced functionali
 
 - **`/prompts`** - List all available structured prompts and their usage
 - **`/prompt <prompt_name> "arg1" "arg2"`** - Execute a specific prompt with arguments
+- **`/resources`** - List all available resources from the MCP server
+- **`/resource <resource_uri>`** - Load and work with specific resources
 - **`exit`**, **`quit`**, or **`q`** - Exit the application cleanly
 
 ### Available Prompts
@@ -93,6 +95,30 @@ The weather assistant now supports interactive commands for enhanced functionali
   - Generates a structured comparison between two cities
   - Provides side-by-side analysis of temperature, conditions, and wind
   - Presents results in easy-to-read tables or bullet points
+
+### Resource Management
+
+The assistant can load and work with external resources:
+
+- **`/resources`** - Shows available resources like:
+  - `file://delivery_log` - Access delivery log data
+  - `file://index` - Access index file data
+- **`/resource file://delivery_log`** - Load delivery log content
+  - After loading, you can specify actions like "analyze this data" or "summarize the orders"
+  - Or press Enter to just add the content to conversation memory
+
+### Example Resource Usage
+
+```bash
+You: /resources
+# Lists: file://delivery_log, file://index
+
+You: /resource file://delivery_log
+Resource loaded. What should I do with this content? 
+> analyze the delivery patterns
+
+# The assistant will analyze the loaded delivery data and provide insights
+```
 
 ### Natural Language Queries
 
@@ -113,6 +139,14 @@ You: /prompts
 You: /prompt compare_weather_prompt "New York" "Los Angeles"
 # Generates structured weather comparison between NYC and LA
 
+You: /resources
+# Lists available resources: file://delivery_log, file://index
+
+You: /resource file://delivery_log
+Resource loaded. What should I do with this content? 
+> find the most common delivery cities
+# Assistant analyzes the delivery data and identifies patterns
+
 You: What's the weather like in London?
 # Natural language query for current London weather
 
@@ -120,7 +154,49 @@ You: exit
 # Clean exit without errors
 ```
 
-The assistant provides comprehensive weather information including forecasts, alerts, detailed atmospheric conditions, and structured comparisons between locations.
+## Features
+
+### Weather Capabilities
+- **Current Conditions**: Real-time weather data with detailed metrics
+- **48-Hour Forecasts**: Hourly weather predictions 
+- **8-Day Forecasts**: Extended daily weather outlook
+- **Weather Alerts**: Severe weather warnings and advisories
+- **UV Index & Air Quality**: Comprehensive atmospheric data
+- **Smart Comparisons**: AI-generated weather comparisons between cities
+
+### Interactive System
+- **Structured Prompts**: Pre-defined prompt templates for consistent results
+- **Resource Management**: Load and analyze external data files
+- **Context Memory**: Maintains conversation history and loaded resource content
+- **Clean Exits**: Proper error handling for graceful shutdowns
+- **Command Discovery**: Built-in help system for available commands
+
+The assistant provides comprehensive weather information including forecasts, alerts, detailed atmospheric conditions, and structured comparisons between locations. It also features resource management capabilities for loading and analyzing external data files.
+
+## Technical Details
+
+### Architecture
+- **MCP Server**: Handles weather API calls and resource management
+- **Weather Agent**: LangGraph-based conversational AI with Google Gemini
+- **Protocol**: Model Context Protocol for structured tool and resource access
+- **APIs**: OpenWeatherMap One Call API 3.0 for weather data
+
+### Resource System
+- **Delivery Log**: Sample delivery data for testing resource capabilities
+- **Index File**: Additional data source for resource management examples
+- **Extensible**: Easy to add new resource types and data sources
+
+### Sample Data Files
+
+This repository includes sample data files to demonstrate the resource management system:
+
+- **`weather_agent/delivery_log.txt`** - Contains sample delivery order data with order numbers and cities
+  - Format: "Order #XXXXX: Delivered to [City Name]" 
+  - Access via: `/resource file://delivery_log`
+  - Use cases: Data analysis, pattern recognition, city frequency analysis
+- **Sample content**: Order deliveries to various US cities including San Diego, Austin, Raleigh, etc.
+
+These files are included in the repository and ready to use for testing the resource management features.
 
 ## Security Notes
 

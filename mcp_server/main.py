@@ -18,6 +18,44 @@ if not OPENWEATHERMAP_API_KEY:
 mcp = FastMCP("WeatherAssistant")
 
 @mcp.tool()
+def list_available_tools() -> dict:
+    """
+    Lists all available tools in this MCP server.
+    
+    Returns:
+        A dictionary containing information about all available tools.
+    """
+    return {
+        "available_tools": [
+            {
+                "name": "get_weather",
+                "description": "Fetches comprehensive weather data using OpenWeatherMap One Call API 3.0",
+                "parameters": {
+                    "location": "City name with optional country code (e.g., 'London,uk')"
+                },
+                "features": [
+                    "Current weather conditions",
+                    "48-hour hourly forecast", 
+                    "8-day daily forecast",
+                    "Weather alerts and warnings",
+                    "UV index and visibility data"
+                ]
+            },
+            {
+                "name": "list_available_tools",
+                "description": "Lists all available tools in this MCP server",
+                "parameters": "None",
+                "features": ["Tool discovery", "API documentation"]
+            }
+        ],
+        "server_info": {
+            "name": "WeatherAssistant",
+            "api_version": "One Call API 3.0",
+            "total_tools": 2
+        }
+    }
+
+@mcp.tool()
 def get_weather(location: str) -> dict:
     """
     Fetches comprehensive weather data for a specified location using OpenWeatherMap One Call API 3.0.

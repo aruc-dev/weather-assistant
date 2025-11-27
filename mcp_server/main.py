@@ -26,8 +26,7 @@ def unix_to_human_time(unix_timestamp):
 
 # Initialize the FastMCP server
 mcp = FastMCP("WeatherAssistant")
-
-
+    
 @mcp.tool()
 def list_available_tools() -> dict:
     """
@@ -241,8 +240,40 @@ def compare_weather_prompt(location_a: str, location_b: str) -> str:
        bulleted list, to make it easy for the user to understand at a glance.
     """
 
+@mcp.resource("file://delivery_log")
+def delivery_log_resource() -> list[str]:
+    """
+    Reads a delivery log file and returns its contents as a list of lines.
+    Each line contains an order number and a delivery location.
+    """
+    try:
+        log_file = pathlib.Path("delivery_log.txt")
+        if not log_file.exists():
+            return ["Error: The delivery_log.txt file was not found on the server."]
+        
+        # Read the file, remove leading/trailing whitespace, and split into lines
+        return log_file.read_text(encoding="utf-8").strip().splitlines()
+        
+    except Exception as e:
+        return [f"An unexpected error occurred while reading the delivery log: {str(e)}"]
 
-
+@mcp.resource("file://index")
+def index_resource() -> list[str]:
+    """
+    Reads the index.md file and returns its contents as a list of lines.
+    Contains order delivery information.
+    """
+    try:
+        index_file = pathlib.Path("index.md")
+        if not index_file.exists():
+            return ["Error: The index.md file was not found on the server."]
+        
+        # Read the file, remove leading/trailing whitespace, and split into lines
+        return index_file.read_text(encoding="utf-8").strip().splitlines()
+        
+    except Exception as e:
+        return [f"An unexpected error occurred while reading the index file: {str(e)}"]
+    
 
 if __name__ == "__main__":
     # The server will run and listen for requests from the client over stdio

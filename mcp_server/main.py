@@ -3,6 +3,7 @@ import requests
 from mcp.server.fastmcp import FastMCP
 from dotenv import load_dotenv
 import pathlib
+from datetime import datetime, timezone
 
 # Load environment variables from the parent directory's .env file
 env_path = pathlib.Path(__file__).parent.parent / '.env'
@@ -13,6 +14,14 @@ OPENWEATHERMAP_API_KEY = os.getenv("OPENWEATHERMAP_API_KEY")
 if not OPENWEATHERMAP_API_KEY:
     print("Warning: OPENWEATHERMAP_API_KEY environment variable is not set!")
     print("Please set your OpenWeatherMap API key in the .env file.")
+
+def unix_to_human_time(unix_timestamp):
+    """Convert Unix timestamp to human-readable time"""
+    try:
+        dt = datetime.fromtimestamp(unix_timestamp, tz=timezone.utc)
+        return dt.strftime("%Y-%m-%d %H:%M UTC")
+    except (ValueError, TypeError):
+        return "Invalid timestamp"
 
 # Initialize the FastMCP server
 mcp = FastMCP("WeatherAssistant")
@@ -139,8 +148,8 @@ def get_weather(location: str) -> dict:
                 "morning_temp": f"{today['temp']['morn']}°C",
                 "evening_temp": f"{today['temp']['eve']}°C",
                 "precipitation_probability": f"{int(today['pop'] * 100)}%",
-                "sunrise": f"Unix timestamp: {today['sunrise']}",
-                "sunset": f"Unix timestamp: {today['sunset']}"
+                "sunrise": unix_to_human_time(today['sunrise']),
+                "sunset": unix_to_human_time(today['sunset'])
             }
         
         # Add next 3 days forecast
@@ -148,7 +157,7 @@ def get_weather(location: str) -> dict:
             formatted_data["3_day_forecast"] = []
             for day in daily[1:4]:  # Next 3 days
                 formatted_data["3_day_forecast"].append({
-                    "date": f"Unix timestamp: {day['dt']}",
+                    "date": unix_to_human_time(day['dt']),
                     "summary": day.get("summary", "No summary available"),
                     "min_temp": f"{day['temp']['min']}°C",
                     "max_temp": f"{day['temp']['max']}°C",
@@ -163,8 +172,8 @@ def get_weather(location: str) -> dict:
                 formatted_data["alerts"].append({
                     "event": alert["event"],
                     "description": alert["description"][:200] + "..." if len(alert["description"]) > 200 else alert["description"],
-                    "start": f"Unix timestamp: {alert['start']}",
-                    "end": f"Unix timestamp: {alert['end']}"
+                    "start": unix_to_human_time(alert['start']),
+                    "end": unix_to_human_time(alert['end'])
                 })
         
         return formatted_data

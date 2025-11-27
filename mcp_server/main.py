@@ -23,8 +23,10 @@ def unix_to_human_time(unix_timestamp):
     except (ValueError, TypeError):
         return "Invalid timestamp"
 
+
 # Initialize the FastMCP server
 mcp = FastMCP("WeatherAssistant")
+
 
 @mcp.tool()
 def list_available_tools() -> dict:
@@ -63,6 +65,7 @@ def list_available_tools() -> dict:
             "total_tools": 2
         }
     }
+
 
 @mcp.tool()
 def get_weather(location: str) -> dict:
@@ -171,7 +174,9 @@ def get_weather(location: str) -> dict:
             for alert in alerts[:3]:  # Limit to 3 alerts
                 formatted_data["alerts"].append({
                     "event": alert["event"],
-                    "description": alert["description"][:200] + "..." if len(alert["description"]) > 200 else alert["description"],
+                    "description": (alert["description"][:200] + "..." 
+                                   if len(alert["description"]) > 200 
+                                   else alert["description"]),
                     "start": unix_to_human_time(alert['start']),
                     "end": unix_to_human_time(alert['end'])
                 })
@@ -193,7 +198,8 @@ def get_weather(location: str) -> dict:
             if status_code == 401:
                 return {"error": "Authentication failed. Please check your API key and ensure you're subscribed to One Call API 3.0."}
             elif status_code == 402:
-                return {"error": "Subscription required. One Call API 3.0 requires a separate 'One Call by Call' subscription."}
+                return {"error": ("Subscription required. One Call API 3.0 requires a separate "
+                                "'One Call by Call' subscription.")}
             elif status_code == 429:
                 return {"error": "API rate limit exceeded. Please try again later."}
             else:
@@ -208,6 +214,51 @@ def get_weather(location: str) -> dict:
         return {"error": f"An unexpected error occurred: {e}"}
 
 
+@mcp.prompt()
+def compare_weather_prompt(location_a: str, location_b: str) -> str:
+    """
+    Generates a clear, comparative summary of the weather between two specified locations.
+    This is the best choice when a user asks to compare, contrast, or see the difference
+    in weather between two places.
+
+    Args:
+        location_a: The first city for comparison (e.g., "London").
+        location_b: The second city for comparison (e.g., "Paris").
+    """
+    return f"""
+    You are acting as a helpful weather analyst. Your goal is to provide a clear and
+    easy-to-read comparison of the weather in two different locations for a user.
+
+    The user wants to compare the weather between "{location_a}" and "{location_b}".
+
+    To accomplish this, follow these steps:
+    1. First, gather the necessary weather data for both "{location_a}" and "{location_b}".
+    2. Once you have the weather data for both locations, DO NOT simply list the raw results.
+    3. Instead, synthesize the information into a concise summary. Your final response
+       should highlight the key differences, focusing on temperature, the general conditions
+       (e.g., 'sunny' vs 'rainy'), and wind speed.
+    4. Present the comparison in a structured format, like a markdown table or a clear
+       bulleted list, to make it easy for the user to understand at a glance.
+    """
+
+
+
+
 if __name__ == "__main__":
     # The server will run and listen for requests from the client over stdio
-    mcp.run(transport="stdio")
+    try:
+        mcp.run()
+    except (BrokenPipeError, EOFError, ValueError) as e:
+        # Handle clean shutdown when parent process closes stdio
+        if "closed file" in str(e) or "Broken pipe" in str(e):
+            # Clean exit when client disconnects
+            import sys
+            sys.exit(0)
+        else:
+            # Re-raise if it's a different error
+            raise
+    except KeyboardInterrupt:
+        # Handle Ctrl+C gracefully
+        import sys
+        sys.exit(0)
+

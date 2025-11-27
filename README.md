@@ -79,14 +79,48 @@ This application now uses **OpenWeatherMap One Call API 3.0** which provides com
 
 Once both components are running, you can interact with the weather assistant by typing natural language queries about weather information for different locations.
 
+### Interactive Commands
+
+The weather assistant now supports interactive commands for enhanced functionality:
+
+- **`/prompts`** - List all available structured prompts and their usage
+- **`/prompt <prompt_name> "arg1" "arg2"`** - Execute a specific prompt with arguments
+- **`exit`**, **`quit`**, or **`q`** - Exit the application cleanly
+
+### Available Prompts
+
+- **Weather Comparison**: `/prompt compare_weather_prompt "London" "Paris"`
+  - Generates a structured comparison between two cities
+  - Provides side-by-side analysis of temperature, conditions, and wind
+  - Presents results in easy-to-read tables or bullet points
+
+### Natural Language Queries
+
 **Enhanced capabilities with One Call API 3.0:**
 - "What's the weather in New York?" - Get current conditions
-- "What's the hourly forecast for London?" - Get detailed hourly data
+- "What's the hourly forecast for London?" - Get detailed hourly data  
 - "Will it rain in Tokyo this week?" - Get 8-day forecast
 - "Are there any weather alerts for Miami?" - Get weather warnings
 - "What's the UV index in Sydney?" - Get UV and air quality data
+- "Compare the weather between Seattle and Portland" - Get AI-generated comparison
 
-The assistant now provides much more comprehensive weather information including forecasts, alerts, and detailed atmospheric conditions.
+### Example Usage
+
+```bash
+You: /prompts
+# Lists all available prompts
+
+You: /prompt compare_weather_prompt "New York" "Los Angeles"
+# Generates structured weather comparison between NYC and LA
+
+You: What's the weather like in London?
+# Natural language query for current London weather
+
+You: exit
+# Clean exit without errors
+```
+
+The assistant provides comprehensive weather information including forecasts, alerts, detailed atmospheric conditions, and structured comparisons between locations.
 
 ## Security Notes
 

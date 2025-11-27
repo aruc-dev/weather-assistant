@@ -1,0 +1,16 @@
+# MCP and FastMCP dependencies
+mcp
+fastmcp
+requests
+
+# Python environment management
+python-dotenv
+
+# LangGraph and LangChain dependencies
+langgraph
+langchain-google-genai
+langchain-core
+langchain-mcp-adapters
+
+# Typing extensions
+typing-extensions

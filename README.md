@@ -16,9 +16,45 @@ This application now uses **OpenWeatherMap One Call API 3.0** which provides com
 ## Project Structure
 
 - `mcp_server/` - Contains the MCP server that provides weather data tools
-- `weather_agent/` - Contains the client/agent code that interacts with the MCP server
+- `weather_agent_langchain/` - LangChain-based client implementation (full-featured)
+- `weather_agent_Llamaindex/` - LlamaIndex-based client implementation (simplified)
+- `weather_agent/` - Legacy client directory (deprecated)
 - `.env` - Environment variables file (create from `.env.example`)
 - `.env.example` - Template for environment variables
+
+## Client Options
+
+This project provides **two different AI agent implementations** to demonstrate different approaches to MCP client development:
+
+### 1. LangChain Implementation (`weather_agent_langchain/`)
+- **Full-featured** implementation with comprehensive capabilities
+- **LangGraph-based** architecture for complex conversational flows
+- **Advanced features**: Structured prompts, resource management, interactive commands
+- **File**: `weather_agent_langchain/main.py`
+- **Best for**: Production applications requiring rich conversational AI
+
+### 2. LlamaIndex Implementation (`weather_agent_Llamaindex/`)
+- **Simplified** implementation focusing on core functionality
+- **ReActAgent-based** architecture for straightforward interactions
+- **Streamlined**: Basic weather queries and tool usage
+- **File**: `weather_agent_Llamaindex/main.py`
+- **Best for**: Learning MCP concepts and rapid prototyping
+
+Both implementations connect to the same MCP server and provide weather functionality, but offer different levels of sophistication and feature sets.
+
+### Feature Comparison
+
+| Feature | LangChain | LlamaIndex | Legacy |
+|---------|-----------|------------|--------|
+| Basic Weather Queries | ✅ | ✅ | ✅ |
+| Interactive Commands (`/prompts`, `/resources`) | ✅ | ❌ | ✅ |
+| Structured Prompt System | ✅ | ❌ | ✅ |
+| Resource Management | ✅ | ❌ | ✅ |
+| Weather Comparisons | ✅ | ✅ | ✅ |
+| Conversation Memory | ✅ | ✅ | ✅ |
+| Code Complexity | Medium | Low | High |
+| Lines of Code | ~324 | ~63 | ~400+ |
+| Best For | Production | Learning | Reference |
 
 ## Setup
 
@@ -69,7 +105,21 @@ This application now uses **OpenWeatherMap One Call API 3.0** which provides com
    python main.py
    ```
 
-2. **Start the Weather Agent (in a separate terminal):**
+2. **Choose and Start a Weather Agent (in a separate terminal):**
+
+   **Option A: LangChain Implementation (Recommended)**
+   ```bash
+   cd weather_agent_langchain
+   python main.py
+   ```
+   
+   **Option B: LlamaIndex Implementation (Simplified)**
+   ```bash
+   cd weather_agent_Llamaindex
+   python main.py
+   ```
+
+   **Legacy Option: Original Implementation**
    ```bash
    cd weather_agent
    python main.py
@@ -177,9 +227,26 @@ The assistant provides comprehensive weather information including forecasts, al
 
 ### Architecture
 - **MCP Server**: Handles weather API calls and resource management
-- **Weather Agent**: LangGraph-based conversational AI with Google Gemini
+- **Weather Agents**: Multiple implementation options:
+  - **LangChain**: LangGraph-based conversational AI with Google Gemini
+  - **LlamaIndex**: ReActAgent with BasicMCPClient integration
+  - **Legacy**: Original comprehensive implementation
 - **Protocol**: Model Context Protocol for structured tool and resource access
 - **APIs**: OpenWeatherMap One Call API 3.0 for weather data
+
+### Implementation Details
+
+**LangChain Implementation:**
+- Uses `LangGraph` for state management and conversation flow
+- Integrates `BasicMCPClient` from `mcp` package
+- Implements custom tool wrapping for MCP tools
+- Advanced prompt engineering and resource management
+
+**LlamaIndex Implementation:**
+- Uses `ReActAgent` for reasoning and action cycles
+- Direct integration with `BasicMCPClient`
+- Simplified tool registration and usage
+- Minimal configuration overhead
 
 ### Resource System
 - **Delivery Log**: Sample delivery data for testing resource capabilities

@@ -12,5 +12,10 @@ langchain-google-genai
 langchain-core
 langchain-mcp-adapters
 
+# LlamaIndex dependencies
+llama-index
+llama-index-llms-google-genai
+llama-index-tools-mcp
+
 # Typing extensions
 typing-extensions
